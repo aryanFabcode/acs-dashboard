@@ -5,6 +5,7 @@ import Badge from "../ui/badge/Badge";
 import Button from "../ui/button/Button";
 import { Icon } from "@iconify/react";
 import { format } from "date-fns";
+import Tooltip from "../ui/tooltip/Tooltip";
 
 interface BookingTableProps {
   bookings: any[];
@@ -36,7 +37,7 @@ const BookingsTable: React.FC<BookingTableProps> = ({
   const formatDate = (dateString: string) =>
     format(new Date(dateString), "dd MMM yyyy, HH:mm");
 
-  console.log('bookings checking',bookings)
+  console.log('bookings checking', bookings)
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -88,9 +89,12 @@ const BookingsTable: React.FC<BookingTableProps> = ({
                       {formatDate(booking.updated_at)}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                      <div className="max-w-[200px] truncate">
-                        {booking.specific_dates?.join(', ') || 'N/A'}
-                      </div>
+                      <Tooltip content={booking.specific_dates?.join(', ') || 'No specific dates'}>
+                        <div className="max-w-[200px] truncate">
+                          {booking.specific_dates?.join(', ') || 'N/A'}
+                        </div>
+                      </Tooltip>
+
                     </TableCell>
                     <TableCell className="px-4 py-3">
                       <Badge
@@ -104,7 +108,7 @@ const BookingsTable: React.FC<BookingTableProps> = ({
                       </Badge>
                     </TableCell>
                     <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                      £{/* Add price field if available */}
+                      {booking.price ? `£${booking.price}` : '-'}
                     </TableCell>
                     <TableCell className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -124,14 +128,16 @@ const BookingsTable: React.FC<BookingTableProps> = ({
                           <Icon icon="heroicons:trash" className="w-4 h-4" />
                         </Button>
                         {onEditBooking && booking?.care_type === "custom_care" && (
-                          <Button
-                            size="xs"
-                            variant="outline"
-                            color="error"
-                            onClick={() => onEditBooking(booking)}
-                          >
-                            <Icon icon="fluent-mdl2:generate" className="w-3 h-3" />
-                          </Button>
+                          <Tooltip content="Edit custom care booking">
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              color="error"
+                              onClick={() => onEditBooking(booking)}
+                            >
+                              <Icon icon="fluent-mdl2:generate" className="w-3 h-3" />
+                            </Button>
+                          </Tooltip>
                         )
                         }
                       </div>

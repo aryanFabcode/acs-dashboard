@@ -97,6 +97,10 @@ export const carersApi = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['Carer'],
         }),
+        getCarerDetails: builder.query<Carer, string>({
+            query: (id) => `/dashboard/carer?id=${id}`,
+            providesTags: (result, error, id) => (result ? [{ type: 'Carer', id }] : []),
+        }),
         createCarer: builder.mutation({
             query: (carerData: CarerPayload) => ({
                 url: '/dashboard/carer',
@@ -108,4 +112,4 @@ export const carersApi = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useGetCarersQuery, useDeleteCarerMutation, useCreateCarerMutation } = carersApi;
+export const { useGetCarersQuery, useGetCarerDetailsQuery, useDeleteCarerMutation, useCreateCarerMutation } = carersApi;

@@ -1,15 +1,31 @@
 // app/carers/[id]/page.tsx
 'use client';
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Badge from '@/components/ui/badge/Badge';
 import { useSelector } from 'react-redux';
 import CustomImage from '@/components/CustomImage';
+import { useGetCarerDetailsQuery } from '@/lib/redux/api/carersApi';
 
 export default function CarerDetails({ params }: { params: { id: string } }) {
   const router = useRouter();
-  // const { data: carer, isLoading, error } = useGetCarerQuery(params.id);
-  const { selectedCarer: carer } = useSelector((state: any) => state.carerDetails);
+  const paramsfromNavigate = useParams();
+  const carerId = paramsfromNavigate?.id;
+
+  const { data: fetchedClient, isLoading, isFetching } = useGetCarerDetailsQuery(carerId);
+
+  const { selectedCarer } = useSelector((state: any) => state.carerDetails);
+  const carer = selectedCarer || fetchedClient?.data;
+
+  if (!selectedCarer && (isFetching || isLoading)) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center p-8 bg-gray-50 rounded-xl shadow-sm">
+          <h2 className="text-xl font-medium text-gray-700">Loading client details...</h2>
+        </div>
+      </div>
+    );
+  }
 
   if (!carer) {
     return (
@@ -117,14 +133,17 @@ export default function CarerDetails({ params }: { params: { id: string } }) {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex flex-col md:flex-row items-center gap-6 mb-4 md:mb-0">
               <div className="w-32 h-32 rounded-full border-4 border-blue-100 shadow-md overflow-hidden">
-                <CustomImage
+                {carer.profile_image ? (<CustomImage
                   src={carer.profile_image}
                   alt={carer.name}
                   width={128}
                   height={128}
                   fallbackSrc="/images/default-avatar.png"
                   className="w-full h-full object-cover"
-                />
+                />) : (<div className="w-full h-full bg-brand-500 flex items-center justify-center text-white">
+                  {carer.name.charAt(0)}
+                </div>)}
+
               </div>
               <div className="text-center md:text-left">
                 <h1 className="text-3xl font-bold text-gray-800">{carer.name}</h1>
@@ -153,10 +172,11 @@ export default function CarerDetails({ params }: { params: { id: string } }) {
             <div className="bg-blue-50 rounded-lg p-4 text-center">
               <p className="text-sm text-gray-600">Hourly Rate</p>
               <p className="font-semibold text-lg text-gray-900">
-                {new Intl.NumberFormat('en-GB', {
+                {/* {new Intl.NumberFormat('en-GB', {
                   style: 'currency',
                   currency: 'GBP',
-                }).format(carer.hourly_rate / 100)}
+                }).format(carer.hourly_rate / 100)} */}
+                {carer.hourly_rate ? `£${carer.hourly_rate}` : '-'}
               </p>
             </div>
             <div className="bg-blue-50 rounded-lg p-4 text-center">

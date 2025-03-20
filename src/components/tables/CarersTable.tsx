@@ -123,7 +123,7 @@ const CarersTable: React.FC<CarerTableProps> = ({
                       </Badge>
                     </TableCell>
                     <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                      {formatCurrency(carer.hourly_rate)}
+                      {carer?.hourly_rate ? `£${carer.hourly_rate}` : '-'}
                     </TableCell>
                     <TableCell className="px-4 py-3">
                       <div className="flex items-center gap-2">

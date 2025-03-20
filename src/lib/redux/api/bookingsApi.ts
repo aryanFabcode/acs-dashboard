@@ -57,7 +57,7 @@ export const bookingsApi = apiSlice.injectEndpoints({
             ],
         }),
         getBooking: builder.query<Booking, string>({
-            query: (id) => `/dashboard/booking/${id}`,
+            query: (id) => `/dashboard/booking?id=${id}`,
             providesTags: (result, error, id) => [{ type: 'Booking', id }],
         }),
         updateBooking: builder.mutation<Booking, { id: string; status: string; price: number; carer_id: string }>({

@@ -14,6 +14,7 @@ interface PaymentTableProps {
     loading?: boolean;
     onPageChange: (newPage: number) => void;
     onViewReceipt: (receiptUrl: string) => void;
+    onViewDetails: (payment: any) => void;
 }
 
 const PaymentsTable: React.FC<PaymentTableProps> = ({
@@ -23,7 +24,8 @@ const PaymentsTable: React.FC<PaymentTableProps> = ({
     totalPayments,
     loading,
     onPageChange,
-    onViewReceipt
+    onViewReceipt,
+    onViewDetails
 }) => {
     const totalPages = Math.ceil(totalPayments / limit);
     const startRange = (page - 1) * limit + 1;
@@ -119,6 +121,14 @@ const PaymentsTable: React.FC<PaymentTableProps> = ({
                                             >
                                                 <Icon icon="heroicons:document-text" className="w-4 h-4 mr-2" />
                                                 View Receipt
+                                            </Button>
+                                            <Button
+                                                size="xs"
+                                                variant="outline"
+                                                onClick={() => onViewDetails(payment)}
+                                            >
+                                                <Icon icon="heroicons:document-text" className="w-4 h-4 mr-2" />
+                                                View Details
                                             </Button>
                                         </TableCell>
                                     </TableRow>

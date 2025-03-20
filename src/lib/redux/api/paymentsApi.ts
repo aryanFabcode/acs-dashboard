@@ -28,6 +28,12 @@ interface PaymentsResponse {
     };
 }
 
+interface SinglePaymentResponse {
+    status: number;
+    message: string;
+    data: Payment;
+}
+
 export const paymentsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getPayments: builder.query<PaymentsResponse, {
@@ -48,7 +54,13 @@ export const paymentsApi = apiSlice.injectEndpoints({
                 }
             })
         }),
+        getPaymentById: builder.query<SinglePaymentResponse, string>({
+            query: (id) => ({
+                url: `/dashboard/payment`,
+                params: { id }
+            })
+        }),
     }),
 });
 
-export const { useGetPaymentsQuery } = paymentsApi;
+export const { useGetPaymentsQuery, useGetPaymentByIdQuery } = paymentsApi;

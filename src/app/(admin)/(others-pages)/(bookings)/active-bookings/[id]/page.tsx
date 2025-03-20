@@ -1,15 +1,49 @@
 // app/bookings/[id]/page.tsx
 "use client";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import DetailItem from '@/components/reusable/DetailItem';
 import { RootState } from '@reduxjs/toolkit/query';
 import SectionList from '@/components/reusable/SectionList';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useGetBookingQuery } from '@/lib/redux/api/bookingsApi';
+import { useEffect } from 'react';
+import { setSelectedBooking } from '@/lib/redux/slices/bookingDetailsSlice';
 
 export default function BookingDetails() {
-    const { selectedBooking } = useSelector((state: RootState) => state.bookingDetails);
+    const paramsfromNavigate = useParams();
     const router = useRouter();
+    const dispatch = useDispatch();
+    const bookingId = paramsfromNavigate?.id;
+
+    const { selectedBooking: bookingDetails } = useSelector((state: RootState) => state.bookingDetails);
+    // Skip fetching if client data exists in Redux and matches the ID
+    const skip = bookingDetails?._id === bookingId;
+    const { data: fetchedBooking, isLoading, isFetching } = useGetBookingQuery(bookingId, { skip });
+    console.log(fetchedBooking,'fetchbooking')
+    // Update Redux store when new client data is fetched
+    useEffect(() => {
+        if (fetchedBooking) {
+            dispatch(setSelectedBooking(fetchedBooking?.data));
+        }
+    }, [fetchedBooking, dispatch]);
+
+
+    // Determine loading state and which data to use
+    const loading = !skip && (isLoading || isFetching);
+    const selectedBooking = skip ? bookingDetails : fetchedBooking?.data;
+    console.log(selectedBooking, 'selectedBooking in booking details');
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-96">
+                <div className="text-center p-8 bg-gray-50 rounded-xl shadow-sm">
+                    <h2 className="text-xl font-medium text-gray-700">Loading client details...</h2>
+                </div>
+            </div>
+        );
+    }
+
 
     if (!selectedBooking) {
         return (
@@ -34,9 +68,9 @@ export default function BookingDetails() {
     }
 
 
-    const patientNames = selectedBooking.num_of_patients === "2"
-        ? `${selectedBooking.patient_name}, ${selectedBooking.patient_name_2}`
-        : selectedBooking.patient_name;
+    const patientNames = selectedBooking?.num_of_patients === "2"
+        ? `${selectedBooking?.patient_name}, ${selectedBooking?.patient_name_2}`
+        : selectedBooking?.patient_name;
 
     // Get status color
     const getStatusColor = (status: string) => {
@@ -145,8 +179,8 @@ export default function BookingDetails() {
         //         )}
         //     </div>
         // </div>
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen p-0">
+            <div className="max-w-8xl mx-auto">
                 {/* Header */}
                 <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -263,7 +297,7 @@ export default function BookingDetails() {
                             <h2 className="text-xl font-semibold text-white">Schedule</h2>
                         </div>
                         <div className="p-6">
-                            {selectedBooking.specific_dates?.length > 0 ? (
+                            {selectedBooking?.specific_dates?.length > 0 ? (
                                 <div>
                                     <h3 className="font-medium text-gray-700 mb-2">Specific Dates</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

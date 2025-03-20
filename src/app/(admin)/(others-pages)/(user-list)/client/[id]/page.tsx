@@ -1,80 +1,62 @@
-// // app/clients/[id]/page.tsx
-// "use client";
-// import { useSelector } from 'react-redux';
-// import { format } from 'date-fns';
-// import CustomImage from '@/components/CustomImage';
-// import { RootState } from '@reduxjs/toolkit/query';
-// import SectionList from '@/components/reusable/SectionList';
-// import DetailItem from '@/components/reusable/DetailItem';
-
-// export default function ClientDetails() {
-//   const { selectedClient } = useSelector((state: RootState) => state.clientDetails);
-//   console.log(selectedClient, 'checking the details of selected client')
-
-//   if (!selectedClient) return <div>No client selected</div>;
-
-//   return (
-//     <div className="p-6 max-w-4xl mx-auto">
-//       <div className="flex items-start gap-6 mb-8">
-//         <div className="w-32 h-32 rounded-full overflow-hidden">
-//           <CustomImage
-//             src={selectedClient.profile_image}
-//             alt={selectedClient.name}
-//             width={128}
-//             height={128}
-//             fallbackSrc="/images/default-avatar.png"
-//             className="object-cover w-full h-full"
-//           />
-//         </div>
-//         <div>
-//           <h1 className="text-2xl font-bold">{selectedClient.name}</h1>
-//           <p className="text-gray-600">{selectedClient.email}</p>
-//           <div className="mt-2 flex gap-2">
-//             <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-//               {selectedClient.status}
-//             </span>
-//             <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-//               {selectedClient.gender}
-//             </span>
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//         <div className="card p-6">
-//           <h2 className="text-xl font-semibold mb-4">Details</h2>
-//           <dl className="space-y-2">
-//             <DetailItem label="Phone" value={selectedClient.phone} />
-//             <DetailItem label="Address" value={selectedClient.address} />
-//             <DetailItem label="Created At" value={format(new Date(selectedClient.created_at), "dd MMM yyyy, HH:mm")} />
-//             <DetailItem label="Updated At" value={format(new Date(selectedClient.updated_at), "dd MMM yyyy, HH:mm")} />
-//           </dl>
-//         </div>
-
-//         <div className="card p-6">
-//           <h2 className="text-xl font-semibold mb-4">Additional Info</h2>
-//           <div className="space-y-2">
-//             <SectionList title="Pet Preferences" items={selectedClient.pet_preferences} />
-//             <SectionList title="Preferred Carer Gender" items={[selectedClient.preferred_carer_gender]} />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-//new v2
 // app/clients/[id]/page.tsx
 "use client";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { format } from 'date-fns';
 import CustomImage from '@/components/CustomImage';
 import { RootState } from '@reduxjs/toolkit/query';
 import SectionList from '@/components/reusable/SectionList';
 import DetailItem from '@/components/reusable/DetailItem';
+import { useGetClientDetailsQuery } from '@/lib/redux/api/clientApi';
+import { useEffect } from 'react';
+import { setSelectedClient } from '@/lib/redux/slices/clientDetailsSlice';
+import { useParams, useSearchParams } from 'next/navigation';
 
-export default function ClientDetails() {
+export default function ClientDetails({ params }: { params: { id: string } }) {
+  const paramsfromNavigate = useParams();
+  const searchParams = useSearchParams();
+  console.log(searchParams, 'searchParams');
+  const clientId = paramsfromNavigate?.id;
+  const dispatch = useDispatch();
   const { selectedClient } = useSelector((state: RootState) => state.clientDetails);
+
+
+  // Skip fetching if client data exists in Redux and matches the ID
+  const skip = selectedClient?._id === clientId;
+  const { data: fetchedClient, isLoading, isFetching } = useGetClientDetailsQuery(clientId, { skip });
+
+  // Update Redux store when new client data is fetched
+  useEffect(() => {
+    if (fetchedClient) {
+      dispatch(setSelectedClient(fetchedClient?.data));
+    }
+  }, [fetchedClient, dispatch]);
+
+  console.log(skip, 'skip in client details');
+
+  // Determine loading state and which data to use
+  const loading = !skip && (isLoading || isFetching);
+  const clientData = skip ? selectedClient : fetchedClient?.data;
+  console.log(clientData, 'clientData in client details');
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center p-8 bg-gray-50 rounded-xl shadow-sm">
+          <h2 className="text-xl font-medium text-gray-700">Loading client details...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (!clientData) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center p-8 bg-gray-50 rounded-xl shadow-sm">
+          <h2 className="text-xl font-medium text-gray-700">Client not found</h2>
+        </div>
+      </div>
+    );
+  }
 
   if (!selectedClient) {
     return (
@@ -94,24 +76,31 @@ export default function ClientDetails() {
         <div className="bg-white rounded-2xl shadow-md p-6 mb-6 transition-all hover:shadow-lg">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-100 shadow-md flex-shrink-0">
-              <CustomImage
-                src={selectedClient.profile_image}
-                alt={selectedClient.name}
-                width={128}
-                height={128}
-                fallbackSrc="/images/default-avatar.png"
-                className="object-cover w-full h-full transition-transform hover:scale-105"
-              />
+              {clientData.profile_image ? (
+                <CustomImage
+                  src={clientData.profile_image}
+                  alt={clientData.name}
+                  width={128}
+                  height={128}
+                  fallbackSrc="/images/default-avatar.png"
+                  className="object-cover w-full h-full transition-transform hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full bg-brand-500 flex items-center justify-center text-white">
+                  {clientData.name.charAt(0)}
+                </div>
+              )}
+
             </div>
             <div className="text-center md:text-left">
-              <h1 className="text-3xl font-bold text-gray-800">{selectedClient.name}</h1>
-              <p className="text-blue-600 font-medium">{selectedClient.email}</p>
+              <h1 className="text-3xl font-bold text-gray-800">{clientData.name}</h1>
+              <p className="text-blue-600 font-medium">{clientData.email}</p>
               <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
                 <span className="px-4 py-1.5 bg-blue-100 text-blue-800 rounded-full text-sm font-medium shadow-sm">
-                  {selectedClient.status}
+                  {clientData.status}
                 </span>
                 <span className="px-4 py-1.5 bg-green-100 text-green-800 rounded-full text-sm font-medium shadow-sm">
-                  {selectedClient.gender}
+                  {clientData.gender}
                 </span>
               </div>
             </div>
@@ -126,10 +115,10 @@ export default function ClientDetails() {
             </div>
             <div className="p-6">
               <dl className="space-y-4">
-                <DetailItem label="Phone" value={selectedClient.phone} />
-                <DetailItem label="Address" value={selectedClient.address} />
-                <DetailItem label="Created At" value={format(new Date(selectedClient.created_at), "dd MMM yyyy, HH:mm")} />
-                <DetailItem label="Updated At" value={format(new Date(selectedClient.updated_at), "dd MMM yyyy, HH:mm")} />
+                <DetailItem label="Phone" value={clientData.phone} />
+                <DetailItem label="Address" value={clientData.address} />
+                <DetailItem label="Created At" value={format(new Date(clientData?.created_at), "dd MMM yyyy, HH:mm")} />
+                <DetailItem label="Updated At" value={format(new Date(clientData?.updated_at), "dd MMM yyyy, HH:mm")} />
               </dl>
             </div>
           </div>
@@ -141,8 +130,8 @@ export default function ClientDetails() {
             </div>
             <div className="p-6">
               <div className="space-y-6">
-                <SectionList title="Pet Preferences" items={selectedClient.pet_preferences} />
-                <SectionList title="Preferred Carer Gender" items={[selectedClient.preferred_carer_gender]} />
+                <SectionList title="Pet Preferences" items={clientData.pet_preferences} />
+                <SectionList title="Preferred Carer Gender" items={[clientData.preferred_carer_gender]} />
               </div>
             </div>
           </div>

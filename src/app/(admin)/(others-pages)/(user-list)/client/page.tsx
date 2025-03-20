@@ -46,6 +46,7 @@ export default function BasicTables() {
   const handleViewDetails = (client: any) => {
     dispatch(setSelectedClient(client));
     router.push(`/client/${client._id}`);
+    
   };
 
   return (

@@ -2,9 +2,11 @@
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PaymentsTable from "@/components/tables/PaymentTable";
 import { useGetPaymentsQuery } from "@/lib/redux/api/paymentsApi";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export default function PaymentsPage() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -13,6 +15,11 @@ export default function PaymentsPage() {
   const handleViewReceipt = (receiptUrl: string) => {
     window.open(receiptUrl, '_blank');
   };
+
+  const handleViewDetails = (payment: any) => {
+    router.push(`/payments/${payment._id}`);
+  };
+
   return (
     <div>
       <PageBreadcrumb pageTitle="Payments" />
@@ -25,6 +32,7 @@ export default function PaymentsPage() {
           loading={isLoading}
           onPageChange={setPage}
           onViewReceipt={handleViewReceipt}
+          onViewDetails={handleViewDetails}
         />
       </div>
     </div>

@@ -75,8 +75,8 @@ export const clientApi = apiSlice.injectEndpoints({
       ],
     }),
     getClientDetails: builder.query<Client, string>({
-      query: (clientId) => `/dashboard/client/${clientId}`,
-      providesTags: (result, error, id) => (result ? [{ type: 'Clients', id }] : []),
+      query: (clientId) => `/dashboard/client?id=${clientId}`,
+      providesTags: (result, error, id) => (result ? [{ type: 'Client', id }] : []),
     }),
     createClient: builder.mutation({
       query: (clientData: ClientPayload) => ({
