@@ -7,20 +7,23 @@ import { RootState } from '@reduxjs/toolkit/query';
 import SectionList from '@/components/reusable/SectionList';
 import { useParams, useRouter } from 'next/navigation';
 import { useGetBookingQuery } from '@/lib/redux/api/bookingsApi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { setSelectedBooking } from '@/lib/redux/slices/bookingDetailsSlice';
+import { reverseGeocode } from '@/lib/utils/geoCoding';
 
 export default function BookingDetails() {
     const paramsfromNavigate = useParams();
     const router = useRouter();
     const dispatch = useDispatch();
     const bookingId = paramsfromNavigate?.id;
+    const [address, setAddress] = useState('');
+
 
     const { selectedBooking: bookingDetails } = useSelector((state: RootState) => state.bookingDetails);
     // Skip fetching if client data exists in Redux and matches the ID
     const skip = bookingDetails?._id === bookingId;
     const { data: fetchedBooking, isLoading, isFetching } = useGetBookingQuery(bookingId, { skip });
-    console.log(fetchedBooking,'fetchbooking')
+    console.log(fetchedBooking, 'fetchbooking')
     // Update Redux store when new client data is fetched
     useEffect(() => {
         if (fetchedBooking) {
@@ -33,6 +36,14 @@ export default function BookingDetails() {
     const loading = !skip && (isLoading || isFetching);
     const selectedBooking = skip ? bookingDetails : fetchedBooking?.data;
     console.log(selectedBooking, 'selectedBooking in booking details');
+
+    const [lng, lat] = selectedBooking?.point_address.location.coordinates || [0, 0];
+    
+        useEffect(() => {
+            if (selectedBooking?.point_address?.location?.coordinates) {
+                reverseGeocode(lat, lng).then((data) => setAddress(data));
+            }
+        }, [selectedBooking?.point_address.location?.coordinates]);
 
     if (loading) {
         return (
@@ -130,7 +141,7 @@ export default function BookingDetails() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Patient Information */}
                     <div className="bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-                        <div className="bg-blue-600 px-6 py-4">
+                        <div className="bg-teal-600 px-6 py-4">
                             <h2 className="text-xl font-semibold text-white">Patient Information</h2>
                         </div>
                         <div className="p-6">
@@ -148,7 +159,7 @@ export default function BookingDetails() {
 
                     {/* Care Requirements */}
                     <div className="bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-                        <div className="bg-indigo-600 px-6 py-4">
+                        <div className="bg-teal-700 px-6 py-4">
                             <h2 className="text-xl font-semibold text-white">Care Requirements</h2>
                         </div>
                         <div className="p-6">
@@ -186,10 +197,17 @@ export default function BookingDetails() {
                                     </div>
                                 )}
                                 {selectedBooking.point_address?.location && (
-                                    <DetailItem
-                                        label="Location Coordinates"
-                                        value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
-                                    />
+                                    <>
+                                        <DetailItem
+                                            label="Location Coordinates"
+                                            value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
+                                        />
+                                        <DetailItem
+                                            label="Address"
+                                            value={address}
+                                        />
+                                    </>
+
                                 )}
                             </dl>
                         </div>

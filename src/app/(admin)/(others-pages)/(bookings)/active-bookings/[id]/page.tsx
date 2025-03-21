@@ -36,7 +36,6 @@ export default function BookingDetails() {
         }
     }, [fetchedBooking, dispatch]);
 
-
     const loading = !skip && (isLoading || isFetching);
     const selectedBooking = skip ? bookingDetails : fetchedBooking?.data;
 
@@ -207,7 +206,7 @@ export default function BookingDetails() {
                                             value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
                                         />
                                         <DetailItem
-                                            label="Location Coordinates"
+                                            label="Address"
                                             value={address}
                                         />
                                     </>
