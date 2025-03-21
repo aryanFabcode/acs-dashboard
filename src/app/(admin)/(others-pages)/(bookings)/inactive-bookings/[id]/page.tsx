@@ -6,14 +6,17 @@ import DetailItem from '@/components/reusable/DetailItem';
 import { RootState } from '@reduxjs/toolkit/query';
 import { useParams, useRouter } from 'next/navigation';
 import { useGetBookingQuery } from '@/lib/redux/api/bookingsApi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { setSelectedBooking } from '@/lib/redux/slices/bookingDetailsSlice';
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'your_google_maps_api_key';
+
 
 export default function BookingDetails() {
     const paramsfromNavigate = useParams();
     const router = useRouter();
     const dispatch = useDispatch();
     const bookingId = paramsfromNavigate?.id;
+    const [address, setAddress] = useState('');
 
     const { selectedBooking: bookingDetails } = useSelector((state: RootState) => state.bookingDetails);
     // Skip fetching if client data exists in Redux and matches the ID
@@ -31,7 +34,32 @@ export default function BookingDetails() {
     // Determine loading state and which data to use
     const loading = !skip && (isLoading || isFetching);
     const selectedBooking = skip ? bookingDetails : fetchedBooking?.data;
-    console.log(selectedBooking, 'selectedBooking in booking details');
+    console.log(selectedBooking, 'selectedBooking in inactive')
+
+    const [lng, lat] = selectedBooking?.point_address.location.coordinates || [0, 0];
+
+    useEffect(() => {
+        if (selectedBooking?.point_address?.location?.coordinates) {
+            reverseGeocode(lat, lng).then((data) => setAddress(data));
+        }
+    }, [selectedBooking?.point_address.location?.coordinates]);
+
+
+    const reverseGeocode = async (latitude: number, longitude: number) => {
+        try {
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`,
+            );
+            const data = await response.json();
+            if (data.results && data.results.length > 0) {
+                return data.results[0].formatted_address;
+            }
+            return '';
+        } catch (error) {
+            console.error('Reverse geocoding error:', error);
+            return '';
+        }
+    };
 
     if (loading) {
         return (
@@ -185,10 +213,17 @@ export default function BookingDetails() {
                                     </div>
                                 )}
                                 {selectedBooking.point_address?.location && (
-                                    <DetailItem
-                                        label="Location Coordinates"
-                                        value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
-                                    />
+                                    <>
+                                        <DetailItem
+                                            label="Location Coordinates"
+                                            value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
+                                        />
+                                        <DetailItem
+                                            label="Location Coordinates"
+                                            value={address}
+                                        />
+                                    </>
+
                                 )}
                             </dl>
                         </div>

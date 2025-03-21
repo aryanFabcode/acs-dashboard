@@ -6,7 +6,7 @@ import DetailItem from '@/components/reusable/DetailItem';
 import { RootState } from '@reduxjs/toolkit/query';
 import SectionList from '@/components/reusable/SectionList';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { setSelectedBooking } from '@/lib/redux/slices/bookingDetailsSlice';
 import { useGetBookingQuery } from '@/lib/redux/api/bookingsApi';
 
@@ -15,6 +15,8 @@ export default function BookingDetails() {
     const router = useRouter();
     const dispatch = useDispatch();
     const bookingId = paramsfromNavigate?.id;
+    const [address, setAddress] = useState(null);
+    const [isLoadingAddress, setIsLoadingAddress] = useState(false);
 
     const { selectedBooking: bookingDetails } = useSelector((state: RootState) => state.bookingDetails);
     // Skip fetching if client data exists in Redux and matches the ID
@@ -29,10 +31,41 @@ export default function BookingDetails() {
     }, [fetchedBooking, dispatch]);
 
 
+
+
     // Determine loading state and which data to use
     const loading = !skip && (isLoading || isFetching);
     const selectedBooking = skip ? bookingDetails : fetchedBooking?.data;
     console.log(selectedBooking, 'selectedBooking in booking details');
+
+    useEffect(() => {
+        if (selectedBooking && selectedBooking.point_address?.location) {
+            const fetchAddress = async () => {
+                setIsLoadingAddress(true);
+                try {
+                    const lon = selectedBooking.point_address.location.coordinates[0];
+                    const lat = selectedBooking.point_address.location.coordinates[1];
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, {
+                        headers: {
+                            'User-Agent': 'acs-dashborad (aryan@thefabcode.org)/1.0' // Replace with your app's name and contact email
+                        }
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setAddress(data.display_name);
+                    } else {
+                        setAddress(null);
+                    }
+                } catch (error) {
+                    console.error('Error fetching address:', error);
+                    setAddress(null);
+                } finally {
+                    setIsLoadingAddress(false);
+                }
+            };
+            fetchAddress();
+        }
+    }, [selectedBooking]);
 
     if (loading) {
         return (
@@ -186,10 +219,17 @@ export default function BookingDetails() {
                                     </div>
                                 )}
                                 {selectedBooking.point_address?.location && (
-                                    <DetailItem
-                                        label="Location Coordinates"
-                                        value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
-                                    />
+                                    <>
+                                        <DetailItem
+                                            label="Location Coordinates"
+                                            value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
+                                        />
+                                        <DetailItem
+                                            label="Location Address"
+                                            value={isLoadingAddress ? 'Loading address...' : address || 'Address not found'}
+                                        />
+                                    </>
+
                                 )}
                             </dl>
                         </div>

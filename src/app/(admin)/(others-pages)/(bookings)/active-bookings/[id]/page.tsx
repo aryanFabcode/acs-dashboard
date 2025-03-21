@@ -7,21 +7,29 @@ import { RootState } from '@reduxjs/toolkit/query';
 import SectionList from '@/components/reusable/SectionList';
 import { useParams, useRouter } from 'next/navigation';
 import { useGetBookingQuery } from '@/lib/redux/api/bookingsApi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { setSelectedBooking } from '@/lib/redux/slices/bookingDetailsSlice';
+import { useReverseGeocode } from '@/lib/hooks/useReverseGeocode';
+import { getApproximateLocation, reverseGeocode } from '@/lib/utils/geoCoding';
+
+// Add this section for the reverse geocoding functionality
+type GeocodingResult = {
+    address: string;
+    loading: boolean;
+    error: string | null;
+};
 
 export default function BookingDetails() {
     const paramsfromNavigate = useParams();
     const router = useRouter();
     const dispatch = useDispatch();
     const bookingId = paramsfromNavigate?.id;
+    const [address, setAddress] = useState('');
 
     const { selectedBooking: bookingDetails } = useSelector((state: RootState) => state.bookingDetails);
-    // Skip fetching if client data exists in Redux and matches the ID
     const skip = bookingDetails?._id === bookingId;
     const { data: fetchedBooking, isLoading, isFetching } = useGetBookingQuery(bookingId, { skip });
-    console.log(fetchedBooking,'fetchbooking')
-    // Update Redux store when new client data is fetched
+
     useEffect(() => {
         if (fetchedBooking) {
             dispatch(setSelectedBooking(fetchedBooking?.data));
@@ -29,10 +37,16 @@ export default function BookingDetails() {
     }, [fetchedBooking, dispatch]);
 
 
-    // Determine loading state and which data to use
     const loading = !skip && (isLoading || isFetching);
     const selectedBooking = skip ? bookingDetails : fetchedBooking?.data;
-    console.log(selectedBooking, 'selectedBooking in booking details');
+
+    const [lng, lat] = selectedBooking?.point_address.location.coordinates || [0, 0];
+
+    useEffect(() => {
+        if (selectedBooking?.point_address?.location?.coordinates) {
+            reverseGeocode(lat, lng).then((data) => setAddress(data));
+        }
+    }, [selectedBooking?.point_address.location?.coordinates]);
 
     if (loading) {
         return (
@@ -187,10 +201,17 @@ export default function BookingDetails() {
                                     </div>
                                 )}
                                 {selectedBooking.point_address?.location && (
-                                    <DetailItem
-                                        label="Location Coordinates"
-                                        value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
-                                    />
+                                    <>
+                                        <DetailItem
+                                            label="Location Coordinates"
+                                            value={`Lat: ${selectedBooking.point_address.location.coordinates[1]?.toFixed(6)}, Lng: ${selectedBooking.point_address.location.coordinates[0]?.toFixed(6)}`}
+                                        />
+                                        <DetailItem
+                                            label="Location Coordinates"
+                                            value={address}
+                                        />
+                                    </>
+
                                 )}
                             </dl>
                         </div>
