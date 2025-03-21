@@ -11,19 +11,19 @@ export default function PaymentDetailScreen() {
     const paymentId = params?.id;
 
     const { data: paymentData, isLoading, isError } = useGetPaymentByIdQuery(paymentId || '');
-    const [darkMode, setDarkMode] = useState(false);
+    // const [darkMode, setDarkMode] = useState(false);
 
     // Toggle dark mode
-    const toggleDarkMode = () => setDarkMode(!darkMode);
+    // const toggleDarkMode = () => setDarkMode(!darkMode);
 
     // Apply dark mode class to document when dark mode state changes
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    }, [darkMode]);
+    // useEffect(() => {
+    //     if (darkMode) {
+    //         document.documentElement.classList.add('dark');
+    //     } else {
+    //         document.documentElement.classList.remove('dark');
+    //     }
+    // }, [darkMode]);
 
 
 
@@ -44,7 +44,7 @@ export default function PaymentDetailScreen() {
         return new Intl.NumberFormat('en-GB', {
             style: 'currency',
             currency: currency,
-        }).format(amount / 100); // Assuming amount is in cents
+        }).format(amount); // Assuming amount is in cents
     };
 
     // Handle loading state

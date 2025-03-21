@@ -79,7 +79,8 @@ const PaymentsTable: React.FC<PaymentTableProps> = ({
                                             #{payment._id.slice(-6)}
                                         </TableCell>
                                         <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                                            {formatCurrency(payment.amount_money?.amount, payment.amount_money?.currency)}
+                                            {/* {formatCurrency(payment.amount_money?.amount, payment.amount_money?.currency)} */}
+                                            {payment.amount_money?.amount ? `€${payment.amount_money?.amount}` : '-' }
                                         </TableCell>
                                         <TableCell className="px-4 py-3">
                                             <Badge
