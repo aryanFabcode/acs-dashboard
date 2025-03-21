@@ -76,56 +76,8 @@ export default function CustomBookingDetailsPage() {
     };
 
     return (
-        // <div className="p-6 max-w-7xl mx-auto">
-        //     {/* Booking Details */}
-        //     <div className="mb-8">
-        //         <h1 className="text-2xl font-bold">Booking Details</h1>
-        //         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-        //             <div className="card p-4">
-        //                 <DetailItem label="Status" value={booking.status} />
-        //                 <DetailItem label="Service Type" value={booking.service_type} />
-        //                 <DetailItem label="Created At"
-        //                     value={format(new Date(booking.created_at), "dd MMM yyyy, HH:mm")} />
-        //             </div>
-        //         </div>
-        //     </div>
-
-        //     {/* Assignment Form */}
-        //     <div className="card p-6">
-        //         <h2 className="text-xl font-bold mb-4">Assign Carer & Set Price</h2>
-        //         <form onSubmit={handleSubmit} className="space-y-4">
-        //             <div>
-        //                 <label>Price (£)</label>
-        //                 <input
-        //                     type="number"
-        //                     value={price}
-        //                     onChange={(e) => setPrice(Number(e.target.value))}
-        //                     className="input-field"
-        //                     required
-        //                 />
-        //             </div>
-        //             <div>
-        //                 <label>Select Carer</label>
-        //                 <select
-        //                     value={carerId}
-        //                     onChange={(e) => setCarerId(e.target.value)}
-        //                     className="input-field"
-        //                     required
-        //                 >
-        //                     <option value="">Choose carer</option>
-        //                     {carers?.data.carers.map((c) => (
-        //                         <option key={c._id} value={c._id}>{c.name}</option>
-        //                     ))}
-        //                 </select>
-        //             </div>
-        //             <button type="submit" className="btn-primary">
-        //                 Submit Assignment
-        //             </button>
-        //         </form>
-        //     </div>
-        // </div>
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen p-6">
-            <div className="max-w-4xl mx-auto">
+        <div className="min-h-screen p-0">
+            <div className="max-w-8xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                     <div>
@@ -145,7 +97,7 @@ export default function CustomBookingDetailsPage() {
 
                 {/* Booking Info Card */}
                 <div className="bg-white rounded-2xl shadow-md overflow-hidden mb-6 transition-all hover:shadow-lg">
-                    <div className="bg-blue-600 px-6 py-4">
+                    <div className="bg-teal-600 px-6 py-4">
                         <h2 className="text-xl font-semibold text-white">Booking Information</h2>
                     </div>
                     <div className="p-6">
@@ -172,7 +124,7 @@ export default function CustomBookingDetailsPage() {
 
                 {/* Assignment Form Card */}
                 <div className="bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-                    <div className="bg-indigo-600 px-6 py-4">
+                    <div className="bg-teal-600 px-6 py-4">
                         <h2 className="text-xl font-semibold text-white">Assign Carer & Set Price</h2>
                     </div>
                     <div className="p-6">
@@ -200,7 +152,7 @@ export default function CustomBookingDetailsPage() {
                                     <select
                                         value={carerId}
                                         onChange={(e) => setCarerId(e.target.value)}
-                                        className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                        className="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                                         required
                                     >
                                         <option value="">Choose carer</option>
@@ -214,7 +166,7 @@ export default function CustomBookingDetailsPage() {
                                 <button
                                     type="submit"
                                     disabled={isUpdating}
-                                    className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:ring-4 focus:ring-indigo-300 font-medium flex items-center"
+                                    className="px-6 py-3 bg-teal-700 text-white rounded-lg hover:bg-teal-900 transition-colors focus:ring-4 focus:ring-indigo-300 font-medium flex items-center"
                                 >
                                     {isUpdating ? (
                                         <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

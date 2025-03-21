@@ -50,84 +50,8 @@ export default function CarerDetails({ params }: { params: { id: string } }) {
   }
 
   return (
-    // <div className="p-6 max-w-7xl mx-auto">
-    //   {/* Header Section */}
-    //   <div className="flex items-center justify-between mb-8">
-    //     <div className="flex items-center gap-4">
-    //       <CustomImage
-    //         src={carer.profile_image}
-    //         alt={carer.name}
-    //         width={80}
-    //         height={80}
-    //         className="rounded-full"
-    //       />
-    //       <div>
-    //         <h1 className="text-2xl font-bold">{carer.name}</h1>
-    //         <div className="flex items-center gap-2 mt-2">
-    //           <Badge color={carer.status === 'active' ? 'success' : 'error'}>
-    //             {carer.status}
-    //           </Badge>
-    //           <span className="text-gray-600">
-    //             {carer.total_experience} years experience
-    //           </span>
-    //         </div>
-    //       </div>
-    //     </div>
-    //     {/* <Button 
-    //       color="error" 
-    //       onClick={() => deleteCarer({ id: carer._id })}
-    //     >
-    //       <Icon icon="heroicons:trash" className="mr-2" />
-    //       Delete Carer
-    //     </Button> */}
-    //   </div>
-
-    //   {/* Details Grid */}
-    //   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    //     {/* Personal Info Card */}
-    //     <div className="bg-white p-6 rounded-lg shadow-sm">
-    //       <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
-    //       <DetailItem label="Email" value={carer.email} />
-    //       <DetailItem label="Phone" value={carer.phone} />
-    //       <DetailItem label="Gender" value={carer.gender} />
-    //       <DetailItem 
-    //         label="Hourly Rate" 
-    //         value={new Intl.NumberFormat('en-GB', {
-    //           style: 'currency',
-    //           currency: 'GBP',
-    //         }).format(carer.hourly_rate / 100)}
-    //       />
-    //     </div>
-
-    //     {/* Skills & Experience Card */}
-    //     <div className="bg-white p-6 rounded-lg shadow-sm">
-    //       <h2 className="text-lg font-semibold mb-4">Skills & Experience</h2>
-    //       <DetailList label="Skills" items={carer.skills} />
-    //       <DetailList label="Experience with Conditions" items={carer.experience} />
-    //       <DetailList label="Languages" items={carer.languages} />
-    //       <DetailList label="Hobbies" items={carer.hobbies} />
-    //     </div>
-
-    //     {/* Documents Card */}
-    //     <div className="bg-white p-6 rounded-lg shadow-sm">
-    //       <h2 className="text-lg font-semibold mb-4">Documents & Certificates</h2>
-    //       <DocumentItem label="DBS Certificate" path={carer.doc_dbs} />
-    //       <DocumentItem label="Right to Work" path={carer.doc_rtw_uk} />
-    //       <DocumentItem label="Training Certificates" path={carer.doc_training_certificates} />
-    //     </div>
-
-    //     {/* Additional Info Card */}
-    //     <div className="bg-white p-6 rounded-lg shadow-sm">
-    //       <h2 className="text-lg font-semibold mb-4">Additional Information</h2>
-    //       <DetailItem label="Can Drive Patients" value={carer.can_drive_patients ? 'Yes' : 'No'} />
-    //       <DetailItem label="Owns Car" value={carer.own_car ? 'Yes' : 'No'} />
-    //       <DetailList label="Pet Preferences" items={carer.pet_preferences} />
-    //       <DetailItem label="Reference Email" value={carer.reference_email} />
-    //     </div>
-    //   </div>
-    // </div>
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen p-0">
+      <div className="max-w-8xl mx-auto">
         {/* Header Section */}
         <div className="bg-white rounded-2xl shadow-md p-6 mb-6 transition-all hover:shadow-lg">
           <div className="flex flex-col md:flex-row justify-between items-center">
@@ -198,7 +122,7 @@ export default function CarerDetails({ params }: { params: { id: string } }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Skills & Experience Card */}
           <div className="bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-            <div className="bg-blue-600 px-6 py-4">
+            <div className="bg-teal-600 px-6 py-4">
               <h2 className="text-xl font-semibold text-white">Skills & Experience</h2>
             </div>
             <div className="p-6">
@@ -211,7 +135,7 @@ export default function CarerDetails({ params }: { params: { id: string } }) {
 
           {/* Documents Card */}
           <div className="bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-            <div className="bg-indigo-600 px-6 py-4">
+            <div className="bg-teal-600 px-6 py-4">
               <h2 className="text-xl font-semibold text-white">Documents & Certificates</h2>
             </div>
             <div className="p-6">
@@ -223,7 +147,7 @@ export default function CarerDetails({ params }: { params: { id: string } }) {
 
           {/* Additional Info Card */}
           <div className="bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-            <div className="bg-purple-600 px-6 py-4">
+            <div className="bg-teal-600 px-6 py-4">
               <h2 className="text-xl font-semibold text-white">Additional Information</h2>
             </div>
             <div className="p-6">

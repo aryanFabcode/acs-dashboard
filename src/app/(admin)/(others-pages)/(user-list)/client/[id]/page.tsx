@@ -70,8 +70,8 @@ export default function ClientDetails({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen p-6">
+      <div className="max-w-8xl mx-auto">
         {/* Client Header Card */}
         <div className="bg-white rounded-2xl shadow-md p-6 mb-6 transition-all hover:shadow-lg">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -110,7 +110,7 @@ export default function ClientDetails({ params }: { params: { id: string } }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Details Card */}
           <div className="bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-            <div className="bg-blue-600 px-6 py-4">
+            <div className="bg-teal-600 px-6 py-4">
               <h2 className="text-xl font-semibold text-white">Client Details</h2>
             </div>
             <div className="p-6">
@@ -125,7 +125,7 @@ export default function ClientDetails({ params }: { params: { id: string } }) {
 
           {/* Additional Info Card */}
           <div className="bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-            <div className="bg-indigo-600 px-6 py-4">
+            <div className="bg-teal-600 px-6 py-4">
               <h2 className="text-xl font-semibold text-white">Preferences</h2>
             </div>
             <div className="p-6">
